@@ -209,6 +209,16 @@
                         )
                     } catch (error) {
                         console.error(error)
+                        showDialog({
+                            title: '扫码失败',
+                            message: error,
+                            showCancelButton: true,
+                            cancelButtonText: '取消',
+                            confirmButtonText: '确定',
+                            onConfirm: () => {
+                                openScan()
+                            }
+                        })
                         showToast('扫码失败' + error)
                     }
                 }
@@ -247,7 +257,8 @@
                     codeReader.reset();
                 });
                 return {
-                    goBack
+                    goBack,
+                    video
                 }
             }
         })
