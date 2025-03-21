@@ -127,7 +127,7 @@
                 </div>
             </div>
         </div>
- 
+
     </div>
     <script>
         const { createApp, ref, onMounted, reactive, onBeforeUnmount } = Vue;
@@ -141,7 +141,7 @@
                 }
 
                 const code = ref('')
-             
+
 
                 /* 扫码 */
                 const video = ref(null);
@@ -188,7 +188,12 @@
                         }
                         // 手动获取摄像头流并绑定
                         const stream = await navigator.mediaDevices.getUserMedia({
-                            video: { facingMode: 'environment' }
+                            video: {
+                                facingMode: 'environment', // 后置摄像头
+                                width: { ideal: 1920 },   // 提高分辨率
+                                height: { ideal: 1080 }
+                            },
+
                         });
 
                         video.value.srcObject = stream;
@@ -204,19 +209,39 @@
                         )
                     } catch (error) {
                         console.error(error)
-                        showToast('扫码失败'+ error)
+                        showToast('扫码失败' + error)
                     }
                 }
                 /** 扫码成功 */
                 const handleSuccess = (result) => {
-                    console.log("扫码成功:"+ result)
-                    showToast('扫码成功'+ result)
+                    console.log("扫码成功:" + result)
+                    showToast('扫码成功' + result)
+                    showDialog({
+                        title: '扫码成功',
+                        message: result,
+                        showCancelButton: true,
+                        cancelButtonText: '取消',
+                        confirmButtonText: '确定',
+                        onConfirm: () => {
+                            
+                        }
+                    })
                     code.value = result
                 }
                 /** 扫码失败 */
                 const handleError = (err) => {
-                    console.log("扫码失败"+err)
-                    showToast('扫码失败'+ err)
+                    showDialog({
+                        title: '扫码失败',
+                        message: err,
+                        showCancelButton: true,
+                        cancelButtonText: '取消',
+                        confirmButtonText: '确定',
+                        onConfirm: () => {
+                            
+                        }
+                    })
+                    console.log("扫码失败" + err)
+                    showToast('扫码失败' + err)
                 }
                 onBeforeUnmount(() => {
                     codeReader.reset();
