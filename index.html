@@ -219,16 +219,6 @@
                 }
                 /** 扫码失败 */
                 const handleError = (err) => {
-                    showDialog({
-                        title: '扫码失败',
-                        message: err,
-                        showCancelButton: true,
-                        cancelButtonText: '取消',
-                        confirmButtonText: '确定',
-                        onConfirm: () => {
-                            
-                        }
-                    })
                     console.log("扫码失败" + err)
                 }
                 onBeforeUnmount(() => {
