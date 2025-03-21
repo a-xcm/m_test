@@ -120,7 +120,7 @@
         </van-sticky>
         <div class="camera-view">
             <!-- 扫码框 -->
-            <video ref="video" height="100%" width="100%" class="scanner-video" autoplay></video>
+            <video ref="video" height="100%" width="100%" class="scanner-video" autoplay playsinline></video>
             <div class="qr-scanner">
                 <div class="box">
                     <div class="line"> </div>
@@ -187,12 +187,12 @@
                             return
                         }
                         // 手动获取摄像头流并绑定
-                        // const stream = await navigator.mediaDevices.getUserMedia({
-                        //     video: { facingMode: 'environment' }
-                        // });
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            video: { facingMode: 'environment' }
+                        });
 
-                        // video.value.srcObject = stream;
-                        // video.value.play();
+                        video.value.srcObject = stream;
+                        video.value.play();
                         let firstDeviceId = devices[0].deviceId;
                         codeReader.decodeFromVideoDevice(
                             firstDeviceId,
