@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    </meta>
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="lib/vant4.css" />
+    <script src="lib/vue@3.5.13.js"></script>
+    <script src="lib/vant4.min.js"></script>
+    <!-- 微信JS-SDK -->
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <!-- jsqr -->
+    <script src="lib/ZXing.min.js"></script>
+    <title>扫码核销</title>
+    <style>
+        .van-dialog__title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+
+            span {
+                margin-left: 15px;
+            }
+        }
+
+        .info {
+            text-align: left;
+            margin: 24px 30px;
+
+            .info-item {
+                font-size: 15px;
+                color: #655C5C;
+                line-height: 20px;
+                margin-bottom: 10px;
+            }
+
+            .info-item:last-child {
+                color: #000;
+                margin: 0;
+            }
+
+        }
+
+        .camera-view {
+            width: 100vw;
+            height: (100vh - 46px);
+            position: relative;
+
+            video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        :root {
+            --van-dialog-radius: 7px
+        }
+
+        .qr-scanner {
+            position: fixed;
+            top: 46px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9;
+            /* background-image:
+                linear-gradient(0deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent);
+            background-size: 3rem 3rem;
+            background-position: -1rem -1rem; */
+            width: 100%;
+            height: (100% - 46px);
+            /* background-color: #111; */
+        }
+
+        .qr-scanner .box {
+            width: 75vw;
+            height: 75vw;
+            max-height: 75vh;
+            max-width: 75vh;
+            position: relative;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            border: .1rem solid rgba(0, 255, 51, .2);
+        }
+
+        .qr-scanner .line {
+            height: calc(100% - 2px);
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0, 255, 51, .0) 40%, #00ff33);
+            border-bottom: 2px solid #00ff33;
+            transform: translateY(-100%);
+            animation: radar-beam 3s infinite;
+            /* animation: radar-beam 2s infinite cubic-bezier(.53, .43, .99); */
+        }
+
+        @keyframes radar-beam {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(120%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <van-sticky>
+            <van-nav-bar title="扫码" left-arrow @click-left="goBack"></van-nav-bar>
+        </van-sticky>
+        <div class="camera-view">
+            <!-- 扫码框 -->
+            <video ref="video" height="100%" width="100%" class="scanner-video" autoplay></video>
+            <div class="qr-scanner">
+                <div class="box">
+                    <div class="line"> </div>
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+    <script>
+        const { createApp, ref, onMounted, reactive, onBeforeUnmount } = Vue;
+        const { showToast, showDialog } = vant;
+
+        const app = createApp({
+            setup() {
+                /***返回上一页***/
+                const goBack = () => {
+                    history.back()
+                }
+
+                const code = ref('')
+             
+
+                /* 扫码 */
+                const video = ref(null);
+                let codeReader = reactive(new ZXing.BrowserMultiFormatReader());
+                onMounted(() => {
+                    openScan()
+                })
+
+                const openScan = async () => {
+                    try {
+                        //判断微信浏览器 使用jssdk
+                        // if (/micromessenger/i.test(navigator.userAgent)) {
+                        //     const url = window.location.href.split('#')[0]; // 处理iOS兼容性
+                        //     const res = await api.getWxConfig({ url })
+                        //     wx.config({
+                        //         debug: false,
+                        //         appId: res.appId,
+                        //         timestamp: 0,
+                        //         nonceStr: res.nonceStr,
+                        //         signature: res.signature,
+                        //         jsApiList: ['scanQRCode']
+                        //     })
+
+                        //     wx.scanQRCode({
+                        //         needResult: 1,
+                        //         scanType: ['qrCode', 'barCode'],
+                        //         success: function (res) {
+                        //             const result = res.resultStr.split(',')[1];
+                        //             handleSuccess(result)
+                        //         },
+                        //         fail: function (err) {
+                        //             handleError(err)
+                        //         }
+                        //     })
+
+                        //     return
+                        // }
+
+                        //其他 浏览器
+                        const devices = await codeReader.listVideoInputDevices()
+                        if (devices.length == 0) {
+                            showToast('摄像头访问失败')
+                            return
+                        }
+                        // 手动获取摄像头流并绑定
+                        // const stream = await navigator.mediaDevices.getUserMedia({
+                        //     video: { facingMode: 'environment' }
+                        // });
+
+                        // video.value.srcObject = stream;
+                        // video.value.play();
+                        let firstDeviceId = devices[0].deviceId;
+                        codeReader.decodeFromVideoDevice(
+                            firstDeviceId,
+                            video.value,
+                            (result, err) => {
+                                if (result) handleSuccess(result.text)
+                                if (err) handleError(err)
+                            }
+                        )
+                    } catch (error) {
+                        console.error(error)
+                        showToast('扫码失败'+ error)
+                    }
+                }
+                /** 扫码成功 */
+                const handleSuccess = (result) => {
+                    console.log("扫码成功:"+ result)
+                    showToast('扫码成功'+ result)
+                    code.value = result
+                }
+                /** 扫码失败 */
+                const handleError = (err) => {
+                    console.log("扫码失败"+err)
+                    showToast('扫码失败'+ err)
+                }
+                onBeforeUnmount(() => {
+                    codeReader.reset();
+                });
+                return {
+                    goBack
+                }
+            }
+        })
+        app.use(vant)
+        app.mount('#app')
+    </script>
+</body>
+
+</html>
