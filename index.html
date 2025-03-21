@@ -68,14 +68,14 @@
             right: 0;
             bottom: 0;
             z-index: 9;
-            /* background-image:
+            background-image:
                 linear-gradient(0deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent),
                 linear-gradient(90deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent);
             background-size: 3rem 3rem;
-            background-position: -1rem -1rem; */
+            background-position: -1rem -1rem;
             width: 100%;
             height: (100% - 46px);
-            /* background-color: #111; */
+            background-color: #111;
         }
 
         .qr-scanner .box {
@@ -204,16 +204,15 @@
                             cancelButtonText: '取消',
                             confirmButtonText: '确定',
                             onConfirm: () => {
-                                openScan()
+                               
                             }
                         })
-                        showToast('扫码失败' + error)
+                       
                     }
                 }
                 /** 扫码成功 */
                 const handleSuccess = (result) => {
                     console.log("扫码成功:" + result)
-                    showToast('扫码成功' + result)
                     showDialog({
                         title: '扫码成功',
                         message: result,
@@ -239,7 +238,6 @@
                         }
                     })
                     console.log("扫码失败" + err)
-                    showToast('扫码失败' + err)
                 }
                 onBeforeUnmount(() => {
                     codeReader.reset();
