@@ -16,17 +16,6 @@
     <script src="lib/ZXing.min.js"></script>
     <title>扫码核销</title>
     <style>
-        .van-dialog__title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 21px;
-
-            span {
-                margin-left: 15px;
-            }
-        }
-
         .info {
             text-align: left;
             margin: 24px 30px;
@@ -47,12 +36,12 @@
 
         .camera-view {
             width: 100vw;
-            height: (100vh - 46px);
+            height: 100vh;
             position: relative;
 
             video {
                 width: 100%;
-                height: 100%;
+                height: 100vh;
                 object-fit: cover;
                 position: relative;
                 z-index: 10;
@@ -65,19 +54,19 @@
 
         .qr-scanner {
             position: fixed;
-            top: 46px;
+            top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             z-index: 9;
-            background-image:
+            /* background-image:
                 linear-gradient(0deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent),
                 linear-gradient(90deg, transparent 24%, rgba(32, 255, 77, 0.1) 25%, rgba(32, 255, 77, 0.1) 26%, transparent 27%, transparent 74%, rgba(32, 255, 77, 0.1) 75%, rgba(32, 255, 77, 0.1) 76%, transparent 77%, transparent);
             background-size: 3rem 3rem;
-            background-position: -1rem -1rem;
+            background-position: -1rem -1rem; */
             width: 100%;
-            height: (100% - 46px);
-            background-color: #111;
+            height: 100%;
+            /* background-color: #111; */
         }
 
         .qr-scanner .box {
@@ -90,7 +79,7 @@
             top: 50%;
             transform: translate(-50%, -50%);
             overflow: hidden;
-            border: .1rem solid rgba(0, 255, 51, .2);
+            /* border: .1rem solid rgba(0, 255, 51, .2); */
         }
 
         .qr-scanner .line {
