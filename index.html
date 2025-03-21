@@ -173,13 +173,19 @@
 
                         //其他 浏览器
                         const devices = await codeReader.listVideoInputDevices()
+                        const rearCamera = devices.find(device => device.label.toLowerCase().includes('back'));
                         if (devices.length == 0) {
                             showToast('摄像头访问失败')
                             return
                         }
+                        if (!rearCamera) {
+                            alert('未找到后置摄像头');
+                            return;
+                        }
                         let firstDeviceId = devices[0].deviceId;
+                        let backCameraId = rearCamera.deviceId;
                         codeReader.decodeFromVideoDevice(
-                            firstDeviceId,
+                            backCameraId || firstDeviceId,
                             video.value,
                             (result, err) => {
                                 if (result) handleSuccess(result.text)
